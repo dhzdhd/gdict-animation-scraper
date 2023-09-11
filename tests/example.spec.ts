@@ -1,18 +1,21 @@
 import { test, expect } from '@playwright/test';
 
 test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+  await page.goto('https://www.google.com/search?q=hello+pronunciation/');
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+  const img = page.getByAltText("visual mouth movement");
+  const svgs = await img.evaluateAll(list => list.map(e => e.getAttribute("data-src")));
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+  const gimg = await page.$$("g-img");
+  const durations: number[] = [];
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+  for (const i of gimg) {
+    const duration = await i.getAttribute("data-viseme-duration");
+    if (duration !== null) {
+      durations.push(parseInt(duration));
+    }
+  }
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+  console.log(durations);
+  console.log(svgs);
 });
